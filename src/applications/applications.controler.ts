@@ -7,7 +7,6 @@ export class ApplicationsController {
   constructor(private applications: ApplicationsService) {}
 
   @Get()
-  // @UseGuards(AuthGuardAdmin)
   getApplications() {
     return this.applications.getAllApplications();
   }
@@ -18,7 +17,6 @@ export class ApplicationsController {
   }
 
   @Delete(':applicationId')
-  // @UseGuards(AuthGuardAdmin)
   deleteApplication(@Param('applicationId') applicationId: number) {
     return this.applications.deleteApplication(applicationId);
   }

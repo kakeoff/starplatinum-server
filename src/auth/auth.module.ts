@@ -4,7 +4,6 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
 
 @Module({
   imports: [
@@ -15,7 +14,7 @@ import { LocalStrategy } from './local.strategy';
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService],
   controllers: [AuthController],
   exports: [AuthService],
 })
