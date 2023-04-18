@@ -24,6 +24,7 @@ model Application {
   comment String?
   email   String
   pubs    String
+  cost    Int     @default(0)
 
   @@map("applications")
 }

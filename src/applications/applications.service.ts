@@ -12,6 +12,7 @@ export class ApplicationsService {
         comment: true,
         email: true,
         pubs: true,
+        cost: true,
       },
     });
     return applications;
@@ -23,6 +24,7 @@ export class ApplicationsService {
         comment: application.comment,
         email: application.email,
         pubs: application.pubs,
+        cost: application.cost,
       },
     });
     return app;
