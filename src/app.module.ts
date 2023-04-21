@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApplicationsModule } from './applications/applications.module';
 import { AuthModule } from './auth/auth.module';
+import { PublicationsModule } from './publications/publications.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     ApplicationsModule,
+    PublicationsModule,
     AuthModule,
   ],
   controllers: [AppController],
