@@ -17,7 +17,7 @@ export class PublicationsService {
     return pubs;
   }
   async createPublication(pub) {
-    const app = await this.prisma.publication.create({
+    const publication = await this.prisma.publication.create({
       data: {
         name: pub.name,
         description: pub.description,
@@ -25,7 +25,22 @@ export class PublicationsService {
         cost: pub.cost,
       },
     });
-    return app;
+    return publication;
+  }
+
+  async updatePublication(pub) {
+    const publication = await this.prisma.publication.update({
+      where: {
+        id: pub.id,
+      },
+      data: {
+        name: pub.name,
+        description: pub.description,
+        link: pub.link,
+        cost: pub.cost,
+      },
+    });
+    return publication;
   }
 
   async deletePublication(id: number) {
