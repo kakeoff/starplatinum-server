@@ -24,3 +24,8 @@ export class SendApplicationDto {
   @IsString()
   status: ApplicationStatus;
 }
+
+export class ChangeApplicationStatusDto {
+  @IsString()
+  status: ApplicationStatus;
+}

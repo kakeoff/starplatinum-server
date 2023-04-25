@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApplicationStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { SendApplicationDto } from './applications.dto';
 
 @Injectable()
 export class ApplicationsService {
@@ -19,7 +20,7 @@ export class ApplicationsService {
     });
     return applications;
   }
-  async sendApplication(application) {
+  async sendApplication(application: SendApplicationDto) {
     const app = await this.prisma.application.create({
       data: {
         name: application.name,
@@ -28,6 +29,19 @@ export class ApplicationsService {
         pubs: application.pubs,
         cost: application.cost,
         status: ApplicationStatus.PENDING,
+      },
+    });
+    return app;
+  }
+
+  async changeApplicationStatus(id: number, status: ApplicationStatus) {
+    console.log(ApplicationStatus[status]);
+    const app = await this.prisma.application.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: ApplicationStatus[status],
       },
     });
     return app;

@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApplicationStatus } from '@prisma/client';
 import { EmailService } from '../email.service';
-import { SendApplicationDto } from './applications.dto';
+import {
+  ChangeApplicationStatusDto,
+  SendApplicationDto,
+} from './applications.dto';
 import { ApplicationsService } from './applications.service';
 
 @Controller('applications')
@@ -27,6 +39,38 @@ export class ApplicationsController {
     </p>
     <p>С уважением, команда STARPLATINUM</p>
     `;
+    await this.emailService.sendEmail(to, subject, html);
+    return res;
+  }
+
+  @Patch(':id/status')
+  async changeApplicationStatus(
+    @Param('id') id: number,
+    @Body() dto: ChangeApplicationStatusDto,
+  ) {
+    const res = await this.applications.changeApplicationStatus(
+      Number(id),
+      dto.status,
+    );
+
+    const to = res.email;
+    const subject = 'Заявка оставлена';
+    let html: string;
+    if (res.status === ApplicationStatus.ACCEPTED) {
+      html = `
+      <p>
+      Здравствуйте, ${res.email}!. Ваша заявка была одобрена! Мы свяжемся с Вами для уточнения деталей
+      </p>
+      <p>С уважением, команда STARPLATINUM</p>
+      `;
+    } else if (res.status === ApplicationStatus.CANCELED) {
+      html = `
+      <p>
+      Здравствуйте, ${res.email}!. Ваша заявка была отклонена. Мы свяжемся с Вами для уточнения деталей
+      </p>
+      <p>С уважением, команда STARPLATINUM</p>
+      `;
+    }
     await this.emailService.sendEmail(to, subject, html);
     return res;
   }
