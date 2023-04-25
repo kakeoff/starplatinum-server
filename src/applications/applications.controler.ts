@@ -17,16 +17,18 @@ export class ApplicationsController {
 
   @Post()
   async sendApplication(@Body() dto: SendApplicationDto) {
+    const res = await this.applications.sendApplication(dto);
+
     const to = dto.email;
     const subject = 'Заявка оставлена';
     const html = `
     <p>
-    Здравствуйте, ${dto.email}!. Вы оставляли заявку в рекламном агенстве STARPLATINUM. Мы свяжемся с Вами для уточнения деталей.
+    Здравствуйте, ${res.email}!. Вы оставили заявку в рекламном агенстве STARPLATINUM. Ее уникальный номер: #${res.id}. После рассмотрения, мы свяжемся с Вами для уточнения деталей.
     </p>
     <p>С уважением, команда STARPLATINUM</p>
     `;
     await this.emailService.sendEmail(to, subject, html);
-    return this.applications.sendApplication(dto);
+    return res;
   }
 
   @Delete(':applicationId')
