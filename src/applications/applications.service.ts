@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ApplicationStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class ApplicationsService {
         email: true,
         pubs: true,
         cost: true,
+        status: true,
       },
     });
     return applications;
@@ -25,6 +27,7 @@ export class ApplicationsService {
         email: application.email,
         pubs: application.pubs,
         cost: application.cost,
+        status: ApplicationStatus.PENDING,
       },
     });
     return app;

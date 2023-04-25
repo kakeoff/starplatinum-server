@@ -1,3 +1,4 @@
+import { ApplicationStatus } from '@prisma/client';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class SendApplicationDto {
   @IsString()
@@ -19,4 +20,7 @@ export class SendApplicationDto {
   @IsNumber()
   @IsNotEmpty()
   cost: number;
+
+  @IsString()
+  status: ApplicationStatus;
 }
