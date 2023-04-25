@@ -19,12 +19,13 @@ model Admin {
 }
 
 model Application {
-  id      Int     @id @default(autoincrement())
+  id      Int               @id @default(autoincrement())
   name    String
   comment String?
   email   String
   pubs    String
-  cost    Int     @default(0)
+  cost    Int               @default(0)
+  status  ApplicationStatus @default(PENDING)
 
   @@map("applications")
 }
@@ -37,4 +38,10 @@ model Publication {
   cost        Int    @default(0)
 
   @@map("publications")
+}
+
+enum ApplicationStatus {
+  ACCEPTED
+  CANCELED
+  PENDING
 }
