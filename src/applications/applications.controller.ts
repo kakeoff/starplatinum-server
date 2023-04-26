@@ -73,7 +73,9 @@ export class ApplicationsController {
       <p>С уважением, команда STARPLATINUM</p>
       `;
     }
-    await this.emailService.sendEmail(to, subject, html);
+    if (res.status !== ApplicationStatus.PENDING) {
+      await this.emailService.sendEmail(to, subject, html);
+    }
     return res;
   }
 
