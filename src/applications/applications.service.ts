@@ -35,7 +35,6 @@ export class ApplicationsService {
   }
 
   async changeApplicationStatus(id: number, status: ApplicationStatus) {
-    console.log(ApplicationStatus[status]);
     const app = await this.prisma.application.update({
       where: {
         id: id,

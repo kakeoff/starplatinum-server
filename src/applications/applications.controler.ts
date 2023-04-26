@@ -54,9 +54,10 @@ export class ApplicationsController {
     );
 
     const to = res.email;
-    const subject = 'Заявка оставлена';
+    let subject: string;
     let html: string;
     if (res.status === ApplicationStatus.ACCEPTED) {
+      subject = 'Заявка одобрена';
       html = `
       <p>
       Здравствуйте, ${res.email}!. Ваша заявка была одобрена! Мы свяжемся с Вами для уточнения деталей
@@ -64,6 +65,7 @@ export class ApplicationsController {
       <p>С уважением, команда STARPLATINUM</p>
       `;
     } else if (res.status === ApplicationStatus.CANCELED) {
+      subject = 'Заявка отклонена';
       html = `
       <p>
       Здравствуйте, ${res.email}!. Ваша заявка была отклонена. Мы свяжемся с Вами для уточнения деталей
