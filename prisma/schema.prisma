@@ -19,25 +19,39 @@ model Admin {
 }
 
 model Application {
-  id      Int               @id @default(autoincrement())
-  name    String
-  comment String?
-  email   String
-  pubs    String
-  cost    Int               @default(0)
-  status  ApplicationStatus @default(PENDING)
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  comment                 String?
+  email                   String
+  cost                    Int                       @default(0)
+  status                  ApplicationStatus         @default(PENDING)
+  ApplicationPublications ApplicationPublications[]
 
   @@map("applications")
 }
 
 model Publication {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
-  link        String
-  cost        Int    @default(0)
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  description             String
+  link                    String
+  cost                    Int                       @default(0)
+  ApplicationPublications ApplicationPublications[]
 
   @@map("publications")
+}
+
+model ApplicationPublications {
+  id Int @id @default(autoincrement())
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId Int
+
+  publication     Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  publicationId   Int
+  publicationDate String      @default("")
+
+  @@map("applicationPublications")
 }
 
 enum ApplicationStatus {

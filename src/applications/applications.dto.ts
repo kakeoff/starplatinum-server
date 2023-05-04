@@ -11,7 +11,7 @@ export class SendApplicationDto {
 
   @IsString()
   @IsNotEmpty()
-  pubs: string;
+  pubs: ApplicationPub[];
 
   @IsOptional()
   @IsString()
@@ -23,6 +23,15 @@ export class SendApplicationDto {
 
   @IsString()
   status: ApplicationStatus;
+}
+
+export class ApplicationPub {
+  @IsNumber()
+  id: number;
+  @IsNumber()
+  publicationId: number;
+  @IsString()
+  date: string;
 }
 
 export class ChangeApplicationStatusDto {
