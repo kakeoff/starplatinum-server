@@ -1,10 +1,15 @@
+### Backend part for starplatinum-app
+
 ## Installation
 
 ```bash
-$ yarn install
+$ yarn
+# run docker desktop
+$ docker-compose up
+$ yarn prisma migrate dev
 ```
 
-## Running the app
+## Running the server
 
 ```bash
 # development
@@ -17,15 +22,12 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## Technologies
 
-```bash
-# unit tests
-$ yarn run test
+- 🔭 NestJS
+- ⚡ Yarn
+- 🌈 Typescript
+- 💫 Prisma
+- ✨ ESLint & Prettier
 
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
+_Find more information in the `package.json` file_
