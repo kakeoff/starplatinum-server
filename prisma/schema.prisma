@@ -10,12 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
-  id       Int    @id @default(autoincrement())
-  login    String
-  password String
+model User {
+  id                      Int                       @id @default(autoincrement())
+  login                   String                    @unique
+  password                String
+  role                    Int                       @default(0)
+  ApplicationPublications ApplicationPublications[]
 
-  @@map("admin")
+  @@map("user")
 }
 
 model Application {
@@ -50,6 +52,8 @@ model ApplicationPublications {
   publication     Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
   publicationId   Int
   publicationDate String      @default("")
+  userId          Int
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("applicationPublications")
 }

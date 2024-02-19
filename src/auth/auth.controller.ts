@@ -7,7 +7,17 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    return this.authService.validateAdmin(dto.login, dto.password);
+  async login(@Body() dto: LoginDto): Promise<{ access_token: string }> {
+    return this.authService.login(dto.login, dto.password);
   }
+
+  @Post('register')
+  async register(@Body() dto: LoginDto): Promise<{ message: string }> {
+    return this.authService.register(dto.login, dto.password);
+  }
+
+  // @Get('user')
+  // async getUserInfo(@Res() res: Response): Promise<UserInfo> {
+  //   return this.authService.getUserInfo(Number(userId));
+  // }
 }

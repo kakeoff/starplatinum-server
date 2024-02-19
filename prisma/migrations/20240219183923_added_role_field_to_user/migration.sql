@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "admin" ADD COLUMN     "role" INTEGER NOT NULL DEFAULT 0;
