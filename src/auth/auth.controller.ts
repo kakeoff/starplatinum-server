@@ -15,9 +15,4 @@ export class AuthController {
   async register(@Body() dto: LoginDto): Promise<{ message: string }> {
     return this.authService.register(dto.login, dto.password);
   }
-
-  // @Get('user')
-  // async getUserInfo(@Res() res: Response): Promise<UserInfo> {
-  //   return this.authService.getUserInfo(Number(userId));
-  // }
 }
