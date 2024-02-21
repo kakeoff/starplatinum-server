@@ -6,8 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApplicationStatus } from '@prisma/client';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { AdminGuard } from 'src/user/admin.guard';
 import { EmailService } from '../email.service';
 import {
   ChangeApplicationStatusDto,
@@ -22,11 +25,13 @@ export class ApplicationsController {
     private emailService: EmailService,
   ) {}
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Get()
   getApplications() {
     return this.applications.getAllApplications();
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Post()
   async sendApplication(@Body() dto: SendApplicationDto) {
     const res = await this.applications.sendApplication(dto);
@@ -43,6 +48,7 @@ export class ApplicationsController {
     return res;
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Patch(':id/status')
   async changeApplicationStatus(
     @Param('id') id: number,
@@ -60,7 +66,7 @@ export class ApplicationsController {
       subject = 'Заявка одобрена';
       html = `
       <p>
-      Здравствуйте, ${res.email}!. Ваша заявка была одобрена! Итого к оплате: ${res.cost} руб. Мы свяжемся с Вами для уточнения деталей и оплаты.
+      Здравствуйте, ${to}!. Ваша заявка была одобрена! Итого к оплате: ${res.cost} руб. Мы свяжемся с Вами для уточнения деталей и оплаты.
       </p>
       <p>С уважением, команда STARPLATINUM</p>
       `;
@@ -68,7 +74,7 @@ export class ApplicationsController {
       subject = 'Заявка отклонена';
       html = `
       <p>
-      Здравствуйте, ${res.email}!. Ваша заявка была отклонена. Мы свяжемся с Вами для уточнения деталей
+      Здравствуйте, ${to}!. Ваша заявка была отклонена. Мы свяжемся с Вами для уточнения деталей
       </p>
       <p>С уважением, команда STARPLATINUM</p>
       `;
@@ -79,6 +85,7 @@ export class ApplicationsController {
     return res;
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Delete(':applicationId')
   deleteApplication(@Param('applicationId') applicationId: number) {
     return this.applications.deleteApplication(applicationId);

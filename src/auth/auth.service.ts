@@ -1,7 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserInfo } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -18,13 +17,13 @@ export class AuthService {
       },
     });
     if (!user) {
-      throw new UnauthorizedException('User does not exists');
+      throw new ForbiddenException('User does not exists');
     }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
-      throw new UnauthorizedException('Incorrect password');
+      throw new ForbiddenException('Incorrect password');
     }
-    const payload = { userId: user.id };
+    const payload = { user: user };
     try {
       const token = this.jwtService.sign(payload);
       return {
@@ -45,7 +44,7 @@ export class AuthService {
       },
     });
     if (existingUser) {
-      throw new UnauthorizedException('User already exists');
+      throw new ForbiddenException('User already exists');
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -58,25 +57,5 @@ export class AuthService {
     });
 
     return { message: 'User registered successfully' };
-  }
-
-  async getUserInfo(userId: number): Promise<UserInfo | null> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        login: true,
-        role: true,
-      },
-    });
-    return user
-      ? {
-          id: user.id,
-          login: user.login,
-          role: user.role,
-        }
-      : null;
   }
 }

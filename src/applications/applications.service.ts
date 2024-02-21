@@ -40,7 +40,6 @@ export class ApplicationsService {
         pubs: resultPubsfilter,
       });
     }
-    console.log(flattenedApplications);
     return flattenedApplications;
   }
 
@@ -78,10 +77,8 @@ export class ApplicationsService {
       cost: app.cost,
       pubs: application.pubs,
     };
-    console.log(flattenedApp);
     return flattenedApp;
   }
-
   async changeApplicationStatus(id: number, status: ApplicationStatus) {
     const app = await this.prisma.application.update({
       where: {
@@ -93,7 +90,6 @@ export class ApplicationsService {
     });
     return app;
   }
-
   async deleteApplication(applicationId: number) {
     await this.prisma.application.delete({
       where: {
