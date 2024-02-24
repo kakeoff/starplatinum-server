@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { ApplicationStatus } from '@prisma/client';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { GetUser } from 'src/auth/user.decorator';
+import { UserInfo } from 'src/types';
 import { AdminGuard } from 'src/user/admin.guard';
 import { EmailService } from '../email.service';
 import {
@@ -31,10 +33,13 @@ export class ApplicationsController {
     return this.applications.getAllApplications();
   }
 
-  @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AuthGuard)
   @Post()
-  async sendApplication(@Body() dto: SendApplicationDto) {
-    const res = await this.applications.sendApplication(dto);
+  async sendApplication(
+    @Body() dto: SendApplicationDto,
+    @GetUser() user: UserInfo,
+  ) {
+    const res = await this.applications.sendApplication(dto, user);
 
     const to = dto.email;
     const subject = 'Заявка оставлена';

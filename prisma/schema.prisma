@@ -11,11 +11,14 @@ datasource db {
 }
 
 model User {
-  id                      Int                       @id @default(autoincrement())
-  login                   String                    @unique
-  password                String
-  role                    Int                       @default(0)
-  ApplicationPublications ApplicationPublications[]
+  id        Int      @id @default(autoincrement())
+  login     String   @unique
+  password  String
+  role      Int      @default(0)
+  avatarUrl String   @default("")
+  createdAt DateTime @default(now())
+
+  Application Application[]
 
   @@map("user")
 }
@@ -25,9 +28,12 @@ model Application {
   name                    String
   comment                 String?
   email                   String
+  createdAt               DateTime                  @default(now())
   cost                    Int                       @default(0)
   status                  ApplicationStatus         @default(PENDING)
   ApplicationPublications ApplicationPublications[]
+  userId                  Int
+  User                    User                      @relation(fields: [userId], references: [id])
 
   @@map("applications")
 }
@@ -52,8 +58,6 @@ model ApplicationPublications {
   publication     Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
   publicationId   Int
   publicationDate String      @default("")
-  userId          Int
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("applicationPublications")
 }

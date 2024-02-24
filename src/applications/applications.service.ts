@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ApplicationStatus } from '@prisma/client';
+import { UserInfo } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 import { SendApplicationDto } from './applications.dto';
 
@@ -10,6 +11,11 @@ export class ApplicationsService {
     const applications = await this.prisma.application.findMany({
       include: {
         ApplicationPublications: true,
+        User: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     const flattenedApplications = [];
@@ -38,12 +44,17 @@ export class ApplicationsService {
         cost: app.cost,
         status: app.status,
         pubs: resultPubsfilter,
+        userId: app.User.id,
+        createdAt: app.createdAt,
       });
     }
     return flattenedApplications;
   }
 
-  async sendApplication(application: SendApplicationDto) {
+  async sendApplication(application: SendApplicationDto, user: UserInfo) {
+    if (!user && !user.id) {
+      throw new ForbiddenException('user not found');
+    }
     const app = await this.prisma.application.create({
       data: {
         name: application.name,
@@ -51,6 +62,7 @@ export class ApplicationsService {
         email: application.email,
         cost: application.cost,
         status: ApplicationStatus.PENDING,
+        userId: user.id,
       },
     });
     application.pubs.forEach(async (pub) => {
