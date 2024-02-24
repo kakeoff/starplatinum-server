@@ -20,4 +20,27 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  async getAllUsers(): Promise<UserInfo[]> {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        role: true,
+      },
+    });
+    if (!users) throw new NotFoundException('Users not found');
+    return users;
+  }
+
+  async updateUser(data: UserInfo): Promise<UserInfo> {
+    const user = await this.prisma.user.update({
+      where: {
+        id: data.id,
+      },
+      data: data,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
 }
