@@ -15,7 +15,7 @@ model User {
   login     String   @unique
   password  String
   role      Int      @default(0)
-  avatarUrl String   @default("")
+  avatarUrl String   @default("/uploads/default.png")
   createdAt DateTime @default(now())
 
   Application Application[]

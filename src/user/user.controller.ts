@@ -3,7 +3,7 @@ import { GetUser } from 'src/auth/user.decorator';
 import { UserInfo } from 'src/types';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from './admin.guard';
-import { UpdateUserDto } from './user.dto';
+import { UpdateMeDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -12,12 +12,25 @@ export class UserController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  async getUserInfo(@GetUser() user: UserInfo): Promise<UserInfo> {
-    return this.userService.getUserInfo(user.id);
+  async getMe(@GetUser() user: UserInfo): Promise<UserInfo> {
+    return this.userService.getMe(user.id);
+  }
+
+  @Patch('me')
+  @UseGuards(AuthGuard)
+  async updateMe(
+    @GetUser() user: UserInfo,
+    @Body() dto: UpdateMeDto,
+  ): Promise<UserInfo> {
+    const data = {
+      login: dto.login,
+      avatarUrl: dto.avatarUrl,
+    };
+    return this.userService.updateMe(user.id, data);
   }
 
   @Get('all')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   async getAllUsers(): Promise<UserInfo[]> {
     return this.userService.getAllUsers();
   }
