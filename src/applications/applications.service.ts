@@ -65,20 +65,19 @@ export class ApplicationsService {
         userId: user.id,
       },
     });
-    application.pubs.forEach(async (pub) => {
-      await this.prisma.applicationPublications.create({
-        data: {
-          applicationId: app.id,
-          publicationId: pub.id,
-          publicationDate: pub.date,
-        },
-      });
+    const promises = [];
+    application.pubs.forEach((pub) => {
+      promises.push(
+        this.prisma.applicationPublications.create({
+          data: {
+            applicationId: app.id,
+            publicationId: pub.id,
+            publicationDate: pub.date,
+          },
+        }),
+      );
     });
-    await this.prisma.applicationPublications.findMany({
-      where: {
-        applicationId: app.id,
-      },
-    });
+    await Promise.all(promises);
 
     const flattenedApp = {
       id: app.id,
@@ -88,6 +87,7 @@ export class ApplicationsService {
       status: app.status,
       cost: app.cost,
       pubs: application.pubs,
+      userId: user.id,
     };
     return flattenedApp;
   }
