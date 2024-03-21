@@ -18,6 +18,7 @@ async function main() {
     prisma.user.create({
       data: {
         login: 'admin',
+        email: `email-admin@gmail.com`,
         password: password,
         role: 1,
       },
@@ -29,6 +30,7 @@ async function main() {
       prisma.user.create({
         data: {
           login: `user-${i}`,
+          email: `email-${i}@gmail.com`,
           password: password,
           role: 0,
         },

@@ -11,12 +11,18 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  login     String   @unique
-  password  String
-  role      Int      @default(0)
-  avatarUrl String   @default("/uploads/default/default.png")
-  createdAt DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  login         String    @unique
+  email         String    @unique
+  fullName      String?
+  phone         String?
+  address       String?
+  companyName   String?
+  lastVisitDate DateTime?
+  password      String
+  role          Int       @default(0)
+  avatarUrl     String    @default("/uploads/default/default.png")
+  createdAt     DateTime  @default(now())
 
   Application Application[]
 

@@ -18,6 +18,12 @@ export class UserService {
         role: true,
         createdAt: true,
         avatarUrl: true,
+        email: true,
+        fullName: true,
+        phone: true,
+        companyName: true,
+        address: true,
+        lastVisitDate: true,
       },
     });
     if (!user) throw new NotFoundException('User not found');
@@ -35,6 +41,12 @@ export class UserService {
         role: true,
         createdAt: true,
         avatarUrl: true,
+        email: true,
+        fullName: true,
+        phone: true,
+        companyName: true,
+        address: true,
+        lastVisitDate: true,
       },
       data: data,
     });
@@ -50,6 +62,12 @@ export class UserService {
         role: true,
         createdAt: true,
         avatarUrl: true,
+        email: true,
+        fullName: true,
+        phone: true,
+        companyName: true,
+        address: true,
+        lastVisitDate: true,
       },
     });
     if (!users) throw new NotFoundException('Users not found');
@@ -67,6 +85,12 @@ export class UserService {
         role: true,
         createdAt: true,
         avatarUrl: true,
+        email: true,
+        fullName: true,
+        phone: true,
+        companyName: true,
+        address: true,
+        lastVisitDate: true,
       },
       data: data,
     });
