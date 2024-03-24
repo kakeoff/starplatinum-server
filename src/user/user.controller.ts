@@ -3,7 +3,7 @@ import { GetUser } from 'src/auth/user.decorator';
 import { UserInfo } from 'src/types';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from './admin.guard';
-import { UpdateMeDto, UpdateUserDto } from './user.dto';
+import { UpdateMeDto, UpdateUserRoleDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -35,9 +35,9 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
-  @Patch()
+  @Patch('role')
   @UseGuards(AuthGuard, AdminGuard)
-  async updateUser(@Body() dto: UpdateUserDto): Promise<UserInfo> {
-    return this.userService.updateUser(dto);
+  async updateUserRole(@Body() dto: UpdateUserRoleDto): Promise<UserInfo> {
+    return this.userService.updateUserRole(dto);
   }
 }

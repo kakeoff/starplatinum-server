@@ -1,8 +1,6 @@
-export type UpdateUserDto = {
+export type UpdateUserRoleDto = {
   id: number;
-  role?: number;
-  login?: string;
-  avatarUrl?: string;
+  role: number;
 };
 
 export type UpdateMeDto = {

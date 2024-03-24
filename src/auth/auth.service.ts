@@ -12,9 +12,16 @@ export class AuthService {
     login: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
-        login: login,
+        OR: [
+          {
+            login: login,
+          },
+          {
+            email: login,
+          },
+        ],
       },
     });
     if (!user) {
