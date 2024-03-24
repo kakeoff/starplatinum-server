@@ -89,7 +89,11 @@ export class ApplicationsController {
       `;
     }
     if (res.status !== ApplicationStatus.PENDING) {
-      await this.emailService.sendEmail(to, subject, html);
+      try {
+        await this.emailService.sendEmail(to, subject, html);
+      } catch (err) {
+        console.log('Error while sending email', err);
+      }
     }
     return res;
   }
