@@ -27,6 +27,15 @@ export class UserService {
       },
     });
     if (!user) throw new NotFoundException('User not found');
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastVisitDate: new Date(),
+      },
+    });
     return user;
   }
 
