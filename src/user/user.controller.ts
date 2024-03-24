@@ -22,10 +22,13 @@ export class UserController {
     @GetUser() user: UserInfo,
     @Body() dto: UpdateMeDto,
   ): Promise<UserInfo> {
-    const data = {
-      login: dto.login,
-      avatarUrl: dto.avatarUrl,
-    };
+    const data = { ...dto };
+    for (const key in data) {
+      if (data[key] === '') {
+        data[key] = null;
+      }
+    }
+
     return this.userService.updateMe(user.id, data);
   }
 

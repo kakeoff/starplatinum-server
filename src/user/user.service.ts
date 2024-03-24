@@ -57,7 +57,15 @@ export class UserService {
         address: true,
         lastVisitDate: true,
       },
-      data: data,
+      data: {
+        fullName: data.fullName,
+        address: data.address,
+        avatarUrl: data.avatarUrl,
+        email: data.email,
+        companyName: data.companyName,
+        login: data.login,
+        phone: data.phone,
+      },
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
