@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreatePublicationDto, UpdatePublicationDto } from './publications.dto';
 
 @Injectable()
 export class PublicationsService {
@@ -16,7 +17,7 @@ export class PublicationsService {
     });
     return pubs;
   }
-  async createPublication(pub) {
+  async createPublication(pub: CreatePublicationDto) {
     const publication = await this.prisma.publication.create({
       data: {
         name: pub.name,
@@ -28,7 +29,7 @@ export class PublicationsService {
     return publication;
   }
 
-  async updatePublication(pub) {
+  async updatePublication(pub: UpdatePublicationDto) {
     const publication = await this.prisma.publication.update({
       where: {
         id: pub.id,

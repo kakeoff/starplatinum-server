@@ -1,13 +1,32 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
-export type UpdateUserRoleDto = {
+export class UpdateUserRoleDto {
+  @IsNumber()
   id: number;
+
+  @IsNumber()
   role: number;
-};
+}
+
+export class UpdateUserPasswordDto {
+  @IsString()
+  old: string;
+
+  @IsString()
+  @MinLength(6)
+  new: string;
+}
 
 export class UpdateMeDto {
   @IsOptional()
   @IsString()
+  @MinLength(5)
   login?: string;
 
   @IsOptional()
