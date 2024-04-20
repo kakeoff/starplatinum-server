@@ -21,19 +21,24 @@ import {
 import { ApplicationsService } from './applications.service';
 
 @Controller('applications')
+@UseGuards(AuthGuard)
 export class ApplicationsController {
   constructor(
     private applications: ApplicationsService,
     private emailService: EmailService,
   ) {}
 
-  @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   @Get()
   getApplications() {
     return this.applications.getAllApplications();
   }
 
-  @UseGuards(AuthGuard)
+  @Get('user/:id')
+  getUserApplicationsApplications(@Param('id') id: string) {
+    return this.applications.getUserApplications(Number(id));
+  }
+
   @Post()
   async sendApplication(
     @Body() dto: SendApplicationDto,
@@ -57,10 +62,10 @@ export class ApplicationsController {
     return res;
   }
 
-  @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   @Patch(':id/status')
   async changeApplicationStatus(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() dto: ChangeApplicationStatusDto,
   ) {
     const res = await this.applications.changeApplicationStatus(
@@ -98,9 +103,17 @@ export class ApplicationsController {
     return res;
   }
 
-  @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   @Delete(':applicationId')
-  deleteApplication(@Param('applicationId') applicationId: number) {
-    return this.applications.deleteApplication(applicationId);
+  deleteApplication(@Param('applicationId') applicationId: string) {
+    return this.applications.deleteApplication(Number(applicationId));
+  }
+
+  @Delete('user/:applicationId')
+  deleteMyApplication(
+    @GetUser() user: UserInfo,
+    @Param('applicationId') applicationId: string,
+  ) {
+    return this.applications.deleteMyApplication(user, Number(applicationId));
   }
 }

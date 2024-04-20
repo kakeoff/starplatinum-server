@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ApplicationStatus } from '@prisma/client';
-import { UserInfo } from 'src/types';
+import { UserInfo, UserRole } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 import { SendApplicationDto } from './applications.dto';
 
@@ -10,7 +10,13 @@ export class ApplicationsService {
   async getAllApplications() {
     const applications = await this.prisma.application.findMany({
       include: {
-        ApplicationPublications: true,
+        ApplicationPublications: {
+          select: {
+            id: true,
+            publicationId: true,
+            publicationDate: true,
+          },
+        },
         User: {
           select: {
             id: true,
@@ -18,37 +24,90 @@ export class ApplicationsService {
         },
       },
     });
-    const flattenedApplications = [];
-    for (const app of applications) {
-      const resultPubsfilter = [];
-      for (const appPub of app.ApplicationPublications) {
-        const modelPub = await this.prisma.publication.findUnique({
-          where: {
-            id: appPub.publicationId,
-          },
-        });
-        if (modelPub && modelPub.id === appPub.publicationId) {
-          const data = {
-            id: appPub.id,
-            name: modelPub.name,
-            date: appPub.publicationDate,
-          };
-          resultPubsfilter.push(data);
-        }
-      }
-      flattenedApplications.push({
+
+    const flattenedApplications = applications.map(async (app) => {
+      const pubs = await Promise.all(
+        app.ApplicationPublications.map(async (appPub) => {
+          const modelPub = await this.prisma.publication.findUnique({
+            where: { id: appPub.publicationId },
+          });
+          return modelPub && modelPub.id === appPub.publicationId
+            ? {
+                id: appPub.id,
+                name: modelPub.name,
+                date: appPub.publicationDate,
+              }
+            : null;
+        }),
+      );
+
+      return {
         id: app.id,
         name: app.name,
         comment: app.comment,
         email: app.email,
         cost: app.cost,
         status: app.status,
-        pubs: resultPubsfilter,
+        pubs: pubs.filter(Boolean),
         userId: app.User.id,
         createdAt: app.createdAt,
-      });
-    }
-    return flattenedApplications;
+      };
+    });
+
+    return Promise.all(flattenedApplications);
+  }
+
+  async getUserApplications(userId: number) {
+    const applications = await this.prisma.application.findMany({
+      where: {
+        userId: Number(userId),
+      },
+      include: {
+        ApplicationPublications: {
+          select: {
+            id: true,
+            publicationId: true,
+            publicationDate: true,
+          },
+        },
+        User: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    const flattenedApplications = applications.map(async (app) => {
+      const pubs = await Promise.all(
+        app.ApplicationPublications.map(async (appPub) => {
+          const modelPub = await this.prisma.publication.findUnique({
+            where: { id: appPub.publicationId },
+          });
+          return modelPub && modelPub.id === appPub.publicationId
+            ? {
+                id: appPub.id,
+                name: modelPub.name,
+                date: appPub.publicationDate,
+              }
+            : null;
+        }),
+      );
+
+      return {
+        id: app.id,
+        name: app.name,
+        comment: app.comment,
+        email: app.email,
+        cost: app.cost,
+        status: app.status,
+        pubs: pubs.filter(Boolean),
+        userId: app.User.id,
+        createdAt: app.createdAt,
+      };
+    });
+
+    return Promise.all(flattenedApplications);
   }
 
   async sendApplication(application: SendApplicationDto, user: UserInfo) {
@@ -103,6 +162,27 @@ export class ApplicationsService {
     return app;
   }
   async deleteApplication(applicationId: number) {
+    await this.prisma.application.delete({
+      where: {
+        id: Number(applicationId),
+      },
+    });
+  }
+  async deleteMyApplication(user: UserInfo, applicationId: number) {
+    if (user.role === UserRole.user) {
+      const application = await this.prisma.application.findUnique({
+        where: {
+          id: applicationId,
+        },
+        include: {
+          User: true,
+        },
+      });
+      if (user.id !== application.User.id) {
+        throw new ForbiddenException('no access');
+      }
+    }
+
     await this.prisma.application.delete({
       where: {
         id: Number(applicationId),

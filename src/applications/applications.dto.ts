@@ -1,5 +1,12 @@
 import { ApplicationStatus } from '@prisma/client';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 export class SendApplicationDto {
   @IsString()
   @IsNotEmpty()
@@ -9,8 +16,9 @@ export class SendApplicationDto {
   @IsNotEmpty()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => ApplicationPub)
   pubs: ApplicationPub[];
 
   @IsOptional()
@@ -20,16 +28,13 @@ export class SendApplicationDto {
   @IsNumber()
   @IsNotEmpty()
   cost: number;
-
-  @IsString()
-  status: ApplicationStatus;
 }
 
 export class ApplicationPub {
   @IsNumber()
   id: number;
-  @IsNumber()
-  publicationId: number;
+  @IsString()
+  name: string;
   @IsString()
   date: string;
 }
