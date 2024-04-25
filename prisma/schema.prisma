@@ -24,22 +24,20 @@ model User {
   avatarUrl     String    @default("/uploads/default/default.png")
   createdAt     DateTime  @default(now())
 
-  Application Application[]
+  application Application[]
 
   @@map("user")
 }
 
 model Application {
   id                      Int                       @id @default(autoincrement())
-  name                    String
   comment                 String?
-  email                   String
   createdAt               DateTime                  @default(now())
   cost                    Int                       @default(0)
   status                  ApplicationStatus         @default(PENDING)
-  ApplicationPublications ApplicationPublications[]
+  applicationPublications ApplicationPublications[]
   userId                  Int
-  User                    User                      @relation(fields: [userId], references: [id])
+  user                    User                      @relation(fields: [userId], references: [id])
 
   @@map("applications")
 }
@@ -50,7 +48,7 @@ model Publication {
   description             String
   link                    String
   cost                    Int                       @default(0)
-  ApplicationPublications ApplicationPublications[]
+  applicationPublications ApplicationPublications[]
 
   @@map("publications")
 }

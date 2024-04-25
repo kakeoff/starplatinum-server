@@ -44,13 +44,13 @@ export class ApplicationsController {
     @Body() dto: SendApplicationDto,
     @GetUser() user: UserInfo,
   ) {
-    const res = await this.applications.sendApplication(dto, user);
+    const data = await this.applications.sendApplication(dto, user);
 
-    const to = dto.email;
+    const to = data.email;
     const subject = 'Заявка оставлена';
     const html = `
     <p>
-    Здравствуйте, ${res.email}!. Вы оставили заявку в рекламном агенстве STARPLATINUM. Ее уникальный номер: #${res.id}. После рассмотрения, мы свяжемся с Вами для уточнения деталей.
+    Здравствуйте, ${data.email}!. Вы оставили заявку в рекламном агенстве STARPLATINUM. Ее уникальный номер: #${data.application.id}. После рассмотрения, мы свяжемся с Вами для уточнения деталей.
     </p>
     <p>С уважением, команда STARPLATINUM</p>
     `;
@@ -59,7 +59,7 @@ export class ApplicationsController {
     } catch (err) {
       console.log('Error while sending email', err);
     }
-    return res;
+    return data.application;
   }
 
   @UseGuards(AdminGuard)
@@ -68,23 +68,24 @@ export class ApplicationsController {
     @Param('id') id: string,
     @Body() dto: ChangeApplicationStatusDto,
   ) {
-    const res = await this.applications.changeApplicationStatus(
+    const application = await this.applications.changeApplicationStatus(
       Number(id),
       dto.status,
     );
 
-    const to = res.email;
+    const to = application.user.email;
     let subject: string;
     let html: string;
-    if (res.status === ApplicationStatus.ACCEPTED) {
+    //todo: move to service
+    if (application.status === ApplicationStatus.ACCEPTED) {
       subject = 'Заявка одобрена';
       html = `
       <p>
-      Здравствуйте, ${to}!. Ваша заявка была одобрена! Итого к оплате: ${res.cost} руб. Мы свяжемся с Вами для уточнения деталей и оплаты.
+      Здравствуйте, ${to}!. Ваша заявка была одобрена! Итого к оплате: ${application.cost} руб. Мы свяжемся с Вами для уточнения деталей и оплаты.
       </p>
       <p>С уважением, команда STARPLATINUM</p>
       `;
-    } else if (res.status === ApplicationStatus.CANCELED) {
+    } else if (application.status === ApplicationStatus.CANCELED) {
       subject = 'Заявка отклонена';
       html = `
       <p>
@@ -93,14 +94,14 @@ export class ApplicationsController {
       <p>С уважением, команда STARPLATINUM</p>
       `;
     }
-    if (res.status !== ApplicationStatus.PENDING) {
+    if (application.status !== ApplicationStatus.PENDING) {
       try {
         await this.emailService.sendEmail(to, subject, html);
       } catch (err) {
         console.log('Error while sending email', err);
       }
     }
-    return res;
+    return { id: application.id, status: application.status };
   }
 
   @UseGuards(AdminGuard)

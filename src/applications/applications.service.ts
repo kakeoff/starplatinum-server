@@ -10,14 +10,14 @@ export class ApplicationsService {
   async getAllApplications() {
     const applications = await this.prisma.application.findMany({
       include: {
-        ApplicationPublications: {
+        applicationPublications: {
           select: {
             id: true,
             publicationId: true,
             publicationDate: true,
           },
         },
-        User: {
+        user: {
           select: {
             id: true,
           },
@@ -27,7 +27,7 @@ export class ApplicationsService {
 
     const flattenedApplications = applications.map(async (app) => {
       const pubs = await Promise.all(
-        app.ApplicationPublications.map(async (appPub) => {
+        app.applicationPublications.map(async (appPub) => {
           const modelPub = await this.prisma.publication.findUnique({
             where: { id: appPub.publicationId },
           });
@@ -43,13 +43,11 @@ export class ApplicationsService {
 
       return {
         id: app.id,
-        name: app.name,
         comment: app.comment,
-        email: app.email,
         cost: app.cost,
         status: app.status,
         pubs: pubs.filter(Boolean),
-        userId: app.User.id,
+        userId: app.user.id,
         createdAt: app.createdAt,
       };
     });
@@ -63,14 +61,14 @@ export class ApplicationsService {
         userId: Number(userId),
       },
       include: {
-        ApplicationPublications: {
+        applicationPublications: {
           select: {
             id: true,
             publicationId: true,
             publicationDate: true,
           },
         },
-        User: {
+        user: {
           select: {
             id: true,
           },
@@ -80,7 +78,7 @@ export class ApplicationsService {
 
     const flattenedApplications = applications.map(async (app) => {
       const pubs = await Promise.all(
-        app.ApplicationPublications.map(async (appPub) => {
+        app.applicationPublications.map(async (appPub) => {
           const modelPub = await this.prisma.publication.findUnique({
             where: { id: appPub.publicationId },
           });
@@ -96,13 +94,11 @@ export class ApplicationsService {
 
       return {
         id: app.id,
-        name: app.name,
         comment: app.comment,
-        email: app.email,
         cost: app.cost,
         status: app.status,
         pubs: pubs.filter(Boolean),
-        userId: app.User.id,
+        userId: app.user.id,
         createdAt: app.createdAt,
       };
     });
@@ -116,12 +112,16 @@ export class ApplicationsService {
     }
     const app = await this.prisma.application.create({
       data: {
-        name: application.name,
         comment: application.comment,
-        email: application.email,
         cost: application.cost,
-        status: ApplicationStatus.PENDING,
         userId: user.id,
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
       },
     });
     const promises = [];
@@ -140,33 +140,39 @@ export class ApplicationsService {
 
     const flattenedApp = {
       id: app.id,
-      name: app.name,
       comment: app.comment,
-      email: app.email,
       status: app.status,
       cost: app.cost,
       pubs: application.pubs,
       userId: user.id,
     };
-    return flattenedApp;
+    return { application: flattenedApp, email: app.user.email };
   }
   async changeApplicationStatus(id: number, status: ApplicationStatus) {
-    const app = await this.prisma.application.update({
+    const application = await this.prisma.application.update({
       where: {
         id: id,
       },
       data: {
         status: ApplicationStatus[status],
       },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
     });
-    return app;
+    return application;
   }
   async deleteApplication(applicationId: number) {
     await this.prisma.application.delete({
       where: {
-        id: Number(applicationId),
+        id: applicationId,
       },
     });
+    return { id: applicationId };
   }
   async deleteMyApplication(user: UserInfo, applicationId: number) {
     if (user.role === UserRole.user) {
@@ -175,10 +181,10 @@ export class ApplicationsService {
           id: applicationId,
         },
         include: {
-          User: true,
+          user: true,
         },
       });
-      if (user.id !== application.User.id) {
+      if (user.id !== application.user.id) {
         throw new ForbiddenException('no access');
       }
     }

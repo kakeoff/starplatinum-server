@@ -8,14 +8,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 export class SendApplicationDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  email: string;
-
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ApplicationPub)
