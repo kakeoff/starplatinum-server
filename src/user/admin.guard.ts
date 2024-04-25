@@ -9,7 +9,7 @@ import {
 export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = await context.switchToHttp().getRequest();
-    const user = request.user.user;
+    const user = request.user;
     if (user && user.role === 0) {
       throw new ForbiddenException('no access');
     }

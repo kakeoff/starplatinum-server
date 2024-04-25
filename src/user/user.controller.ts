@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/auth/user.decorator';
-import { UserInfo } from 'src/types';
+import { User, UserInfo } from 'src/types';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from './admin.guard';
 import {
@@ -16,7 +16,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  async getMe(@GetUser() user: UserInfo): Promise<UserInfo> {
+  async getMe(@GetUser() user: UserInfo): Promise<User> {
     return this.userService.getMe(user.id);
   }
 
@@ -25,7 +25,7 @@ export class UserController {
   async updateMe(
     @GetUser() user: UserInfo,
     @Body() dto: UpdateMeDto,
-  ): Promise<UserInfo> {
+  ): Promise<User> {
     const data = { ...dto };
     for (const key in data) {
       if (data[key] === '') {
@@ -47,13 +47,13 @@ export class UserController {
 
   @Get('all')
   @UseGuards(AuthGuard, AdminGuard)
-  async getAllUsers(): Promise<UserInfo[]> {
+  async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
   @Patch('role')
   @UseGuards(AuthGuard, AdminGuard)
-  async updateUserRole(@Body() dto: UpdateUserRoleDto): Promise<UserInfo> {
+  async updateUserRole(@Body() dto: UpdateUserRoleDto): Promise<User> {
     return this.userService.updateUserRole(dto);
   }
 }

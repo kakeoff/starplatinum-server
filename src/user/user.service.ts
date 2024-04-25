@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserInfo } from 'src/types';
+import { User } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   UpdateMeDto,
@@ -37,18 +37,17 @@ export class UserService {
     });
   }
 
-  async getMe(userId: number): Promise<UserInfo> {
+  async getMe(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: this.userFields,
     });
     if (!user) throw new NotFoundException('User not found');
 
-    await this.updateUserLastVisit(userId);
     return user;
   }
 
-  async updateMe(userId: number, data: UpdateMeDto): Promise<UserInfo> {
+  async updateMe(userId: number, data: UpdateMeDto): Promise<User> {
     if (data.login) {
       data.login = data.login.replaceAll(' ', '_');
     }
@@ -59,7 +58,6 @@ export class UserService {
     });
     if (!user) throw new NotFoundException('User not found');
 
-    await this.updateUserLastVisit(userId);
     return user;
   }
 
@@ -101,7 +99,7 @@ export class UserService {
     return 'password changed';
   }
 
-  async getAllUsers(): Promise<UserInfo[]> {
+  async getAllUsers(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
       select: this.userFields,
     });
@@ -109,7 +107,7 @@ export class UserService {
     return users;
   }
 
-  async updateUserRole(data: UpdateUserRoleDto): Promise<UserInfo> {
+  async updateUserRole(data: UpdateUserRoleDto): Promise<User> {
     const user = await this.prisma.user.update({
       where: { id: data.id },
       select: this.userFields,

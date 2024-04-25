@@ -31,7 +31,12 @@ export class AuthService {
     if (!passwordValid) {
       throw new ForbiddenException('Incorrect password');
     }
-    const payload = { user: user };
+    const payload = {
+      id: user.id,
+      login: user.login,
+      role: user.role,
+      email: user.email,
+    };
     try {
       const token = this.jwtService.sign(payload);
       return {
