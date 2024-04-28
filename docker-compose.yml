@@ -18,12 +18,5 @@ services:
     networks:
       - freecodecamp
 
-  redis:
-    image: redis:alpine
-    ports:
-      - 6379:6379
-    networks:
-      - freecodecamp
-
 networks:
   freecodecamp:

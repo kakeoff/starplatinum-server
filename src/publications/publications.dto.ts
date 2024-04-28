@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreatePublicationDto {
   @IsString()
   @IsNotEmpty()
@@ -15,26 +15,34 @@ export class CreatePublicationDto {
   @IsNumber()
   @IsNotEmpty()
   cost: number;
+
+  @IsString()
+  @IsOptional()
+  imageUrl: string | undefined;
 }
 
 export class UpdatePublicationDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   id: number;
 
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsOptional()
+  description?: string;
 
   @IsString()
-  @IsNotEmpty()
-  link: string;
+  @IsOptional()
+  link?: string;
 
   @IsNumber()
-  @IsNotEmpty()
-  cost: number;
+  @IsOptional()
+  cost?: number;
+
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
 }

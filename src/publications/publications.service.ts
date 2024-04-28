@@ -6,15 +6,7 @@ import { CreatePublicationDto, UpdatePublicationDto } from './publications.dto';
 export class PublicationsService {
   constructor(private prisma: PrismaService) {}
   async getAllPublications() {
-    const pubs = await this.prisma.publication.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        link: true,
-        cost: true,
-      },
-    });
+    const pubs = await this.prisma.publication.findMany({});
     return pubs;
   }
   async createPublication(pub: CreatePublicationDto) {
@@ -24,6 +16,7 @@ export class PublicationsService {
         description: pub.description,
         link: pub.link,
         cost: pub.cost,
+        imageUrl: pub.imageUrl,
       },
     });
     return publication;
@@ -34,12 +27,7 @@ export class PublicationsService {
       where: {
         id: pub.id,
       },
-      data: {
-        name: pub.name,
-        description: pub.description,
-        link: pub.link,
-        cost: pub.cost,
-      },
+      data: pub,
     });
     return publication;
   }
