@@ -26,8 +26,6 @@ export class ApplicationPub {
   @IsNumber()
   id: number;
   @IsString()
-  name: string;
-  @IsString()
   date: string;
 }
 

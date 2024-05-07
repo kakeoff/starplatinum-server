@@ -26,27 +26,17 @@ export class ApplicationsService {
     });
 
     const flattenedApplications = applications.map(async (app) => {
-      const pubs = await Promise.all(
-        app.applicationPublications.map(async (appPub) => {
-          const modelPub = await this.prisma.publication.findUnique({
-            where: { id: appPub.publicationId },
-          });
-          return modelPub && modelPub.id === appPub.publicationId
-            ? {
-                id: appPub.id,
-                name: modelPub.name,
-                date: appPub.publicationDate,
-              }
-            : null;
-        }),
-      );
-
       return {
         id: app.id,
         comment: app.comment,
         cost: app.cost,
         status: app.status,
-        pubs: pubs.filter(Boolean),
+        pubs: app.applicationPublications.map((pub) => {
+          return {
+            id: pub.publicationId,
+            date: pub.publicationDate,
+          };
+        }),
         userId: app.user.id,
         createdAt: app.createdAt,
       };
@@ -77,27 +67,17 @@ export class ApplicationsService {
     });
 
     const flattenedApplications = applications.map(async (app) => {
-      const pubs = await Promise.all(
-        app.applicationPublications.map(async (appPub) => {
-          const modelPub = await this.prisma.publication.findUnique({
-            where: { id: appPub.publicationId },
-          });
-          return modelPub && modelPub.id === appPub.publicationId
-            ? {
-                id: appPub.id,
-                name: modelPub.name,
-                date: appPub.publicationDate,
-              }
-            : null;
-        }),
-      );
-
       return {
         id: app.id,
         comment: app.comment,
         cost: app.cost,
         status: app.status,
-        pubs: pubs.filter(Boolean),
+        pubs: app.applicationPublications.map((pub) => {
+          return {
+            id: pub.publicationId,
+            date: pub.publicationDate,
+          };
+        }),
         userId: app.user.id,
         createdAt: app.createdAt,
       };
