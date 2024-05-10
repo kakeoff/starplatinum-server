@@ -152,4 +152,12 @@ export class UserService {
     });
     return { id: cartItem.id };
   }
+
+  async clearUserCart(userId: number): Promise<void> {
+    await this.prisma.cart.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
 }

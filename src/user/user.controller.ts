@@ -90,4 +90,10 @@ export class UserController {
   ): Promise<{ id: number }> {
     return this.userService.deleteCartItem(user.id, Number(id));
   }
+
+  @Patch('cart-clear')
+  @UseGuards(AuthGuard)
+  async clearUserCart(@GetUser() user: UserInfo): Promise<void> {
+    return this.userService.clearUserCart(user.id);
+  }
 }
