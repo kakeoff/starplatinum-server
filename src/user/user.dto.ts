@@ -53,3 +53,15 @@ export class UpdateMeDto {
   @IsString()
   address?: string | null;
 }
+
+export class AddItemToUserCartDto {
+  @IsNumber()
+  itemId: number;
+
+  @IsNumber()
+  type: number;
+
+  @IsString()
+  @IsOptional()
+  itemDate?: string;
+}

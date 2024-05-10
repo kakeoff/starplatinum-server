@@ -4,9 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/types';
+import { CartItem, User } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 import {
+  AddItemToUserCartDto,
   UpdateMeDto,
   UpdateUserPasswordDto,
   UpdateUserRoleDto,
@@ -29,13 +30,6 @@ export class UserService {
     address: true,
     lastVisitDate: true,
   };
-
-  private async updateUserLastVisit(userId: number): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { lastVisitDate: new Date() },
-    });
-  }
 
   async getMe(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
@@ -115,5 +109,47 @@ export class UserService {
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
+  }
+
+  async getUserCart(userId: number): Promise<CartItem[]> {
+    const cartItems = await this.prisma.cart.findMany({
+      where: {
+        userId,
+      },
+    });
+    return cartItems;
+  }
+
+  async addItemToCart(
+    userId: number,
+    dto: AddItemToUserCartDto,
+  ): Promise<CartItem> {
+    const cartItem = await this.prisma.cart.create({
+      data: {
+        itemId: dto.itemId,
+        type: dto.type,
+        itemDate: dto.itemDate,
+        userId,
+      },
+    });
+    return cartItem;
+  }
+
+  async deleteCartItem(userId: number, id: number): Promise<{ id: number }> {
+    const cartItem = await this.prisma.cart.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!cartItem) throw new ForbiddenException('no access');
+
+    await this.prisma.cart.delete({
+      where: {
+        id: cartItem.id,
+      },
+    });
+    return { id: cartItem.id };
   }
 }

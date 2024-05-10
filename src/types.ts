@@ -19,6 +19,18 @@ export type User = {
   createdAt: Date;
 };
 
+export enum CartItemType {
+  publication = 0,
+}
+
+export type CartItem = {
+  id: number;
+  itemId: number;
+  type: CartItemType;
+  itemDate?: string;
+  userId: number;
+};
+
 export enum UserRole {
   admin = 1,
   user = 0,

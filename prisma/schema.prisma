@@ -25,6 +25,7 @@ model User {
   createdAt     DateTime  @default(now())
 
   application Application[]
+  Cart        Cart[]
 
   @@map("user")
 }
@@ -65,6 +66,17 @@ model ApplicationPublications {
   publicationDate String      @default("")
 
   @@map("applicationPublications")
+}
+
+model Cart {
+  id       Int     @id @default(autoincrement())
+  itemId   Int
+  type     Int
+  itemDate String?
+  userId   Int
+  user     User    @relation(fields: [userId], references: [id])
+
+  @@map("cart")
 }
 
 enum ApplicationStatus {
