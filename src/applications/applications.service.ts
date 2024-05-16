@@ -29,6 +29,7 @@ export class ApplicationsService {
       return {
         id: app.id,
         comment: app.comment,
+        responsibleId: app.responsibleId,
         cost: app.cost,
         status: app.status,
         pubs: app.applicationPublications.map((pub) => {
@@ -70,6 +71,7 @@ export class ApplicationsService {
       return {
         id: app.id,
         comment: app.comment,
+        responsibleId: app.responsibleId,
         cost: app.cost,
         status: app.status,
         pubs: app.applicationPublications.map((pub) => {
@@ -123,6 +125,7 @@ export class ApplicationsService {
       comment: app.comment,
       status: app.status,
       cost: app.cost,
+      responsibleId: app.responsibleId,
       pubs: application.pubs,
       userId: user.id,
     };
@@ -174,5 +177,28 @@ export class ApplicationsService {
         id: Number(applicationId),
       },
     });
+  }
+  async setApplicationResponsible(id: number, user: UserInfo) {
+    const application = await this.prisma.application.update({
+      where: {
+        id,
+      },
+      data: {
+        responsibleId: user.id,
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+    return {
+      id: application.id,
+      responsibleId: application.responsibleId,
+      responsibleEmail: user.email,
+      email: application.user.email,
+    };
   }
 }

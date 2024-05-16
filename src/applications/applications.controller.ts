@@ -46,20 +46,33 @@ export class ApplicationsController {
   ) {
     const data = await this.applications.sendApplication(dto, user);
 
-    const to = data.email;
-    const subject = 'Заявка оставлена';
-    const html = `
-    <p>
-    Здравствуйте, ${data.email}!. Вы оставили заявку в рекламном агенстве STARPLATINUM. Ее уникальный номер: #${data.application.id}. После рассмотрения, мы свяжемся с Вами для уточнения деталей.
-    </p>
-    <p>С уважением, команда STARPLATINUM</p>
-    `;
-    try {
-      await this.emailService.sendEmail(to, subject, html);
-    } catch (err) {
-      console.log('Error while sending email', err);
-    }
+    await this.emailService.createApplicationMail({
+      id: data.application.id,
+      email: data.email,
+    });
+
     return data.application;
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch('/responsible')
+  async setApplicationResponsible(
+    @GetUser() user: UserInfo,
+    @Body() dto: { applicationId: number },
+  ) {
+    const data = await this.applications.setApplicationResponsible(
+      dto.applicationId,
+      user,
+    );
+    await this.emailService.createResponsibleMail({
+      id: data.id,
+      responsibleEmail: data.responsibleEmail,
+      email: data.email,
+    });
+    return {
+      id: data.id,
+      responsibleId: data.responsibleId,
+    };
   }
 
   @UseGuards(AdminGuard)
@@ -72,34 +85,12 @@ export class ApplicationsController {
       Number(id),
       dto.status,
     );
-
-    const to = application.user.email;
-    let subject: string;
-    let html: string;
-    //todo: move to service
-    if (application.status === ApplicationStatus.ACCEPTED) {
-      subject = 'Заявка одобрена';
-      html = `
-      <p>
-      Здравствуйте, ${to}!. Ваша заявка была одобрена! Итого к оплате: ${application.cost} руб. Мы свяжемся с Вами для уточнения деталей и оплаты.
-      </p>
-      <p>С уважением, команда STARPLATINUM</p>
-      `;
-    } else if (application.status === ApplicationStatus.CANCELED) {
-      subject = 'Заявка отклонена';
-      html = `
-      <p>
-      Здравствуйте, ${to}!. Ваша заявка была отклонена. Мы свяжемся с Вами для уточнения деталей
-      </p>
-      <p>С уважением, команда STARPLATINUM</p>
-      `;
-    }
     if (application.status !== ApplicationStatus.PENDING) {
-      try {
-        await this.emailService.sendEmail(to, subject, html);
-      } catch (err) {
-        console.log('Error while sending email', err);
-      }
+      await this.emailService.createApplicationStatusMail({
+        email: application.user.email,
+        status: application.status,
+        cost: application.cost,
+      });
     }
     return { id: application.id, status: application.status };
   }

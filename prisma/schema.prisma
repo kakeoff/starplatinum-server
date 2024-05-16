@@ -38,6 +38,7 @@ model Application {
   status                  ApplicationStatus         @default(PENDING)
   applicationPublications ApplicationPublications[]
   userId                  Int
+  responsibleId           Int?
   user                    User                      @relation(fields: [userId], references: [id])
 
   @@map("applications")
