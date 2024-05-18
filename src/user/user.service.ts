@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CartItem, User, UserRole } from 'src/types';
@@ -36,7 +37,7 @@ export class UserService {
       where: { id: userId },
       select: this.userFields,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new UnauthorizedException('User not found');
 
     return user;
   }
