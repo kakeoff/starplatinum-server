@@ -58,11 +58,12 @@ export class ApplicationsController {
   @Patch('/responsible')
   async setApplicationResponsible(
     @GetUser() user: UserInfo,
-    @Body() dto: { applicationId: number },
+    @Body() dto: { applicationId: number; responsibleId: number | null },
   ) {
     const data = await this.applications.setApplicationResponsible(
       dto.applicationId,
       user,
+      dto.responsibleId,
     );
     await this.emailService.createResponsibleMail({
       id: data.id,

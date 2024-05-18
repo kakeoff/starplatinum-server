@@ -27,7 +27,7 @@ export class UserController {
   @Get('me')
   @UseGuards(AuthGuard)
   async getMe(@GetUser() user: UserInfo): Promise<User> {
-    return this.userService.getMe(user.id);
+    return this.userService.getUser(user.id);
   }
 
   @Patch('me')
@@ -59,6 +59,12 @@ export class UserController {
   @UseGuards(AuthGuard, AdminGuard)
   async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
+  }
+
+  @Get('all-admins')
+  @UseGuards(AuthGuard)
+  async getAllAdmins(): Promise<User[]> {
+    return this.userService.getAllAdmins();
   }
 
   @Patch('role')

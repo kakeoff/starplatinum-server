@@ -178,13 +178,17 @@ export class ApplicationsService {
       },
     });
   }
-  async setApplicationResponsible(id: number, user: UserInfo) {
+  async setApplicationResponsible(
+    id: number,
+    user: UserInfo,
+    responsibleId: number | null,
+  ) {
     const application = await this.prisma.application.update({
       where: {
         id,
       },
       data: {
-        responsibleId: user.id,
+        responsibleId: responsibleId,
       },
       include: {
         user: {

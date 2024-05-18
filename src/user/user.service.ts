@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CartItem, User } from 'src/types';
+import { CartItem, User, UserRole } from 'src/types';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   AddItemToUserCartDto,
@@ -31,7 +31,7 @@ export class UserService {
     lastVisitDate: true,
   };
 
-  async getMe(userId: number): Promise<User> {
+  async getUser(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: this.userFields,
@@ -97,7 +97,16 @@ export class UserService {
     const users = await this.prisma.user.findMany({
       select: this.userFields,
     });
-    if (users.length === 0) throw new NotFoundException('Users not found');
+    return users;
+  }
+
+  async getAllAdmins(): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: UserRole.admin,
+      },
+      select: this.userFields,
+    });
     return users;
   }
 
