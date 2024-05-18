@@ -116,7 +116,16 @@ export class UserService {
       select: this.userFields,
       data,
     });
-    if (!user) throw new NotFoundException('User not found');
+
+    await this.prisma.application.updateMany({
+      where: {
+        responsibleId: user.id,
+      },
+      data: {
+        responsibleId: null,
+      },
+    });
+
     return user;
   }
 
