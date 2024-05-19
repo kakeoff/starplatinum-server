@@ -1,43 +1,21 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 import {
   getMockApplicationPublications,
   getMockApplications,
   getMockPublications,
+  getMockUsers,
 } from './seedData';
 
 const prisma = new PrismaClient();
 
-const publications = getMockPublications();
-const applications = getMockApplications();
-const applicationPublications = getMockApplicationPublications();
 async function main() {
-  const password = await bcrypt.hash('12345678', 10);
-  const usersPromises = [];
-  usersPromises.push(
-    prisma.user.create({
-      data: {
-        login: 'admin',
-        email: `email-admin@gmail.com`,
-        password: password,
-        role: 1,
-      },
-    }),
-  );
-
-  for (let i = 0; i < 50; i++) {
-    usersPromises.push(
-      prisma.user.create({
-        data: {
-          login: `user-${i}`,
-          email: `email-${i}@gmail.com`,
-          password: password,
-          role: 0,
-        },
-      }),
-    );
-  }
-  await Promise.all(usersPromises);
+  const publications = getMockPublications();
+  const applications = getMockApplications();
+  const applicationPublications = getMockApplicationPublications();
+  const users = await getMockUsers();
+  await prisma.user.createMany({
+    data: users,
+  });
 
   await prisma.publication.createMany({
     data: publications,

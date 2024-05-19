@@ -65,11 +65,13 @@ export class ApplicationsController {
       user,
       dto.responsibleId,
     );
-    await this.emailService.createResponsibleMail({
-      id: data.id,
-      responsibleEmail: data.responsibleEmail,
-      email: data.email,
-    });
+    if (data.responsibleId) {
+      await this.emailService.createResponsibleMail({
+        id: data.id,
+        responsibleEmail: data.responsibleEmail,
+        email: data.email,
+      });
+    }
     return {
       id: data.id,
       responsibleId: data.responsibleId,
