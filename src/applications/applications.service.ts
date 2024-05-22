@@ -25,7 +25,7 @@ export class ApplicationsService {
       },
     });
 
-    const flattenedApplications = applications.map(async (app) => {
+    const flattenedApplications = applications.map((app) => {
       return {
         id: app.id,
         comment: app.comment,
@@ -43,7 +43,7 @@ export class ApplicationsService {
       };
     });
 
-    return Promise.all(flattenedApplications);
+    return flattenedApplications;
   }
 
   async getUserApplications(userId: number) {
@@ -67,7 +67,7 @@ export class ApplicationsService {
       },
     });
 
-    const flattenedApplications = applications.map(async (app) => {
+    const flattenedApplications = applications.map((app) => {
       return {
         id: app.id,
         comment: app.comment,
@@ -85,7 +85,7 @@ export class ApplicationsService {
       };
     });
 
-    return Promise.all(flattenedApplications);
+    return flattenedApplications;
   }
 
   async sendApplication(application: SendApplicationDto, user: UserInfo) {
