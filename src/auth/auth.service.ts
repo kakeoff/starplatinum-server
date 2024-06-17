@@ -47,7 +47,7 @@ export class AuthService {
     }
   }
 
-  async register(dto: RegisterDto): Promise<{ message: string }> {
+  async register(dto: RegisterDto): Promise<{ access_token: string }> {
     const existingUser = await this.prisma.user.findFirst({
       where: {
         OR: [
@@ -67,13 +67,27 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
-    await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         ...dto,
         password: passwordHash,
       },
     });
 
-    return { message: 'User registered successfully' };
+    const payload = {
+      id: user.id,
+      login: user.login,
+      role: user.role,
+      email: user.email,
+    };
+
+    try {
+      const token = this.jwtService.sign(payload);
+      return {
+        access_token: token,
+      };
+    } catch (err) {
+      throw new Error('Auth error');
+    }
   }
 }

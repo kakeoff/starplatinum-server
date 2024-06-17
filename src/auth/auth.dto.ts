@@ -17,19 +17,20 @@ export class RegisterDto {
   email: string;
 
   @IsString()
-  fullName: string;
+  @IsOptional()
+  fullName?: string;
 
   @IsString()
   @IsOptional()
-  companyName: string | null;
+  companyName?: string;
 
   @IsString()
   @IsOptional()
-  phone: string | null;
+  phone?: string;
 
   @IsString()
   @IsOptional()
-  address: string | null;
+  address?: string;
 
   @IsString()
   @MinLength(6)
