@@ -15,6 +15,7 @@ export class ApplicationsService {
             id: true,
             publicationId: true,
             publicationDate: true,
+            createdAt: true,
           },
         },
         user: {
@@ -36,6 +37,7 @@ export class ApplicationsService {
           return {
             id: pub.publicationId,
             date: pub.publicationDate,
+            createdAt: pub.createdAt,
           };
         }),
         userId: app.user.id,
@@ -57,6 +59,7 @@ export class ApplicationsService {
             id: true,
             publicationId: true,
             publicationDate: true,
+            createdAt: true,
           },
         },
         user: {
@@ -78,6 +81,7 @@ export class ApplicationsService {
           return {
             id: pub.publicationId,
             date: pub.publicationDate,
+            createdAt: pub.createdAt,
           };
         }),
         userId: app.user.id,
@@ -88,15 +92,27 @@ export class ApplicationsService {
     return flattenedApplications;
   }
 
-  async sendApplication(application: SendApplicationDto, user: UserInfo) {
+  async sendApplication(applicationDto: SendApplicationDto, user: UserInfo) {
     if (!user && !user.id) {
       throw new ForbiddenException('user not found');
     }
-    const app = await this.prisma.application.create({
+
+    const publicationsToCreateData = applicationDto.pubs.map((pub) => {
+      return {
+        publicationId: pub.id,
+        publicationDate: pub.date,
+      };
+    });
+    const createdApplication = await this.prisma.application.create({
       data: {
-        comment: application.comment,
-        cost: application.cost,
+        comment: applicationDto.comment,
+        cost: applicationDto.cost,
         userId: user.id,
+        applicationPublications: {
+          createMany: {
+            data: publicationsToCreateData,
+          },
+        },
       },
       include: {
         user: {
@@ -104,33 +120,33 @@ export class ApplicationsService {
             email: true,
           },
         },
+        applicationPublications: {
+          select: {
+            applicationId: true,
+            publicationDate: true,
+            publicationId: true,
+            createdAt: true,
+          },
+        },
       },
     });
-    const promises = [];
-    application.pubs.forEach((pub) => {
-      promises.push(
-        this.prisma.applicationPublications.create({
-          data: {
-            applicationId: app.id,
-            publicationId: pub.id,
-            publicationDate: pub.date,
-          },
-        }),
-      );
-    });
-    await Promise.all(promises);
-
     const flattenedApp = {
-      id: app.id,
-      comment: app.comment,
-      status: app.status,
-      cost: app.cost,
-      responsibleId: app.responsibleId,
-      pubs: application.pubs,
+      id: createdApplication.id,
+      comment: createdApplication.comment,
+      status: createdApplication.status,
+      cost: createdApplication.cost,
+      responsibleId: createdApplication.responsibleId,
+      pubs: createdApplication.applicationPublications.map((pub) => {
+        return {
+          id: pub.publicationId,
+          date: pub.publicationDate,
+          createdAt: pub.createdAt,
+        };
+      }),
       userId: user.id,
-      createdAt: app.createdAt,
+      createdAt: createdApplication.createdAt,
     };
-    return { application: flattenedApp, email: app.user.email };
+    return { application: flattenedApp, email: createdApplication.user.email };
   }
   async changeApplicationStatus(id: number, status: ApplicationStatus) {
     const application = await this.prisma.application.update({

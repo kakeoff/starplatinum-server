@@ -65,17 +65,19 @@ model ApplicationPublications {
   publication     Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
   publicationId   Int
   publicationDate String      @default("")
+  createdAt       DateTime    @default(now())
 
   @@map("applicationPublications")
 }
 
 model Cart {
-  id       Int     @id @default(autoincrement())
-  itemId   Int
-  type     Int
-  itemDate String?
-  userId   Int
-  user     User    @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  type      Int
+  itemDate  String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 
   @@map("cart")
 }

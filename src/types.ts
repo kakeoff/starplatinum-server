@@ -40,4 +40,5 @@ export type ApplicationPublication = {
   id: number;
   name: string;
   date: string;
+  createdAt: string;
 };
