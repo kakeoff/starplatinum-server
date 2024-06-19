@@ -128,6 +128,7 @@ export class ApplicationsService {
       responsibleId: app.responsibleId,
       pubs: application.pubs,
       userId: user.id,
+      createdAt: app.createdAt,
     };
     return { application: flattenedApp, email: app.user.email };
   }
