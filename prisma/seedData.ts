@@ -230,7 +230,7 @@ export const getMockUsers = async () => {
       address: 'Ярославль, Тутаевское ш. 31А',
       companyName: 'STAR PLATINUM',
       lastVisitDate: new Date('2024-05-10T15:30:00Z'),
-      role: 1,
+      role: 2,
       avatarUrl: '/uploads/default/user-1.jpg',
       password,
     },
