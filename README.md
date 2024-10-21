@@ -24,10 +24,15 @@ $ yarn run start:prod
 
 ## Technologies
 
-- 🔭 NestJS
-- ⚡ Yarn
-- 🌈 Typescript
-- 💫 Prisma
-- ✨ ESLint & Prettier
+- NestJS
+- Yarn
+- Typescript
+- Prisma
+- ESLint & Prettier
+- Bcrypt
+- JWT
+- Class Transformer
+- Multer
+- Nodemailer
 
 _Find more information in the `package.json` file_
